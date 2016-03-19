@@ -83,5 +83,5 @@ console.log(C);
 
 for (j = 0; j < 2; j++) {
   //$('#view').append("<br>" + C.model.cardArray[j].toString());
-  $('#cards .player').append('<li><div class="card rank-' + C.model.cardArray[j].rank + ' ' + C.model.cardArray[j].suit + '"><span class="rank">' + C.model.cardArray[j].rank + '</span><span class="suit">&' + C.model.cardArray[j].suit + ';</span></div></li>');
+  $('#cards .player').append('<li><div class="card rank-' + C.model.cardArray[j].rankcss + ' ' + C.model.cardArray[j].suit + '"><span class="rank">' + C.model.cardArray[j].rank + '</span><span class="suit">&' + C.model.cardArray[j].suit + ';</span></div></li>');
 }
