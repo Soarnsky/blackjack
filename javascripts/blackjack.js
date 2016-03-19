@@ -17,6 +17,7 @@ M = {
   },
   Card: function(v) {
     this.rank = "";
+    this.rankcss = "";
     this.suit = "";
 
     r = v % 13 + 1
@@ -25,12 +26,16 @@ M = {
 
       if (r == 1) {
         this.rank = "A";
+        this.rankcss = "a";
       } else if (r == 11) {
         this.rank = "J";
+        this.rankcss = "j";
       } else if (r == 12) {
         this.rank = "Q";
+        this.rankcss = "q";
       } else if (r == 13) {
         this.rank = "K";
+        this.rankcss = "k";
       } else if (r == null) {
         this.rank = "";
       } else {
