@@ -15,19 +15,23 @@
 
 <title>Blackjack</title>
 
+
 <body>
   <div id="blackjack">
 
-  <div id="cards" class="playingCards faceImages">
-    Dealer's Hand
-    <ul class="dealer table"></ul>
-    Your Hand
-    <ul class="player table"></ul>
+    <div id="cards" class="playingCards faceImages">
+      <span id="dealer">Dealer's Hand</span>
+      <ul class="dealer table"></ul>
+      <span id="player">Your Hand</span>
+      <ul class="player table"></ul>
+    </div>
+    <div>
+      <button type="button" id="deal">DEAL</button>
+      <button type="button" id="hit">HIT</button>
+      <button type="button" id="stand">STAND</button>
+    </div>
   </div>
-  <div><button type="button" id="deal">DEAL</button><button type="button" id="hit">HIT</button><button type="button" id="stand">STAND</button></div>
-  </div>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-  <script type= "text/javascript" src="javascripts/blackjack.js"></script>
+
 </body>
 
 

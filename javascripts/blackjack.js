@@ -4,14 +4,17 @@ var M = {},
 
 
 M = {
+  data: {
+
+  },
   Deck: function(n) {
-    this.numDecks = n;
-    this.cardArray = [];
+    numDecks = n;
+    this.data.deck = [];
 
     for (i = 0; i < n; i++) {
       for (j = 0; j < 52; j++) {
-        this.cardArray[j] = new M.Card(j);
-        this.cardArray[j].standardize();
+        this.data.deck[j] = new M.Card(j);
+        this.data.deck[j].standardize();
       }
     }
   },
@@ -19,27 +22,26 @@ M = {
     this.rank = "";
     this.rankcss = "";
     this.suit = "";
-
-    r = v % 13 + 1
+    this.r = v % 13 + 1
 
     this.standardize = function() {
 
-      if (r == 1) {
+      if (this.r == 1) {
         this.rank = "A";
         this.rankcss = "a";
-      } else if (r == 11) {
+      } else if (this.r == 11) {
         this.rank = "J";
         this.rankcss = "j";
-      } else if (r == 12) {
+      } else if (this.r == 12) {
         this.rank = "Q";
         this.rankcss = "q";
-      } else if (r == 13) {
+      } else if (this.r == 13) {
         this.rank = "K";
         this.rankcss = "k";
-      } else if (r == null) {
+      } else if (this.r == null) {
         this.rank = "";
       } else {
-        this.rank = String(r);
+        this.rank = String(this.r);
         this.rankcss = this.rank;
       }
 
@@ -54,19 +56,55 @@ M = {
       } else {
         this.suit = "";
       }
+
+      if (this.r > 10) {
+        this.r = 10
+      };
+      if (this.r == 1) {
+        this.r = 11
+      };
     }
+
+
+  },
+  Player: function() {
+    this.score = 0;
+    this.hand = [];
   },
   shuffle: function(v) {
     for (var j, x, i = v.length; i; j = parseInt(Math.random() * i), x = v[--i], v[i] = v[j], v[j] = x);
     return v;
   },
-  deal: function(d) {},
-  hit: function(c) {},
-  stand: function() {}
+  deal: function() {
+    for (j = 0; j < 3; j++) {
+      //$('#view').append("<br>" + C.model.this.data.deck[j].toString());
+      topCard = this.data.deck.pop();
+      if (j % 2 == 0) {
+        $('#cards .player').append('<li><div class="card rank-' + topCard.rankcss + ' ' + topCard.suit + '"><span class="rank">' + topCard.rank + '</span><span class="suit">&' + topCard.suit + ';</span></div></li>');
+        this.data.player.hand.push(topCard);
+        this.data.player.score += topCard.r;
+        console.log(this.data.player.score);
+      } else {
+        $('#cards .dealer').append('<li><div class="card rank-' + topCard.rankcss + ' ' + topCard.suit + '"><span class="rank">' + topCard.rank + '</span><span class="suit">&' + topCard.suit + ';</span></div></li>');
+        this.data.dealer.hand.push(topCard);
+        this.data.dealer.score += topCard.r;
+        console.log(this.data.dealer.score);
+      }
+    }
+    $('#cards .dealer').append('<li><div class="card back"></div></li>');
+    topCard = this.data.deck.pop();
+    this.data.dealer.hand.push(topCard);
+    this.data.dealer.score += topCard.r;
+    console.log(this.data.dealer.score);
+  },
+  hit: function() {},
+  stand: function() {},
 }
 
 V = {
-
+  btnDeal: $('#deal'),
+  btnHit: $('#hit'),
+  btnStand: $('#stand')
 }
 
 C = {
@@ -74,15 +112,16 @@ C = {
   view: V,
   run: function() {
     this.model.Deck(1);
-    this.model.shuffle(this.model.cardArray);
+    this.model.shuffle(this.model.data.deck);
+    this.model.data.dealer = new this.model.Player();
+    this.model.data.player = new this.model.Player();
   }
+
 }
 
 C.run();
-console.log(C.model.cardArray[0].suit);
-console.log(C);
-
-for (j = 0; j < 2; j++) {
-  //$('#view').append("<br>" + C.model.cardArray[j].toString());
-  $('#cards .player').append('<li><div class="card rank-' + C.model.cardArray[j].rankcss + ' ' + C.model.cardArray[j].suit + '"><span class="rank">' + C.model.cardArray[j].rank + '</span><span class="suit">&' + C.model.cardArray[j].suit + ';</span></div></li>');
-}
+C.view.btnDeal.click(function() {
+  C.view.btnDeal.hide();
+  C.model.deal();
+  console.log(C.model.data.dealer);
+})
