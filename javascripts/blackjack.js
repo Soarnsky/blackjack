@@ -40,6 +40,7 @@ M = {
         this.rank = "";
       } else {
         this.rank = String(r);
+        this.rankcss = this.rank;
       }
 
       if (v >= 0 && v < 13) {
