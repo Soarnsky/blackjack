@@ -8,7 +8,6 @@ M = {
 
   },
   Deck: function(n) {
-    numDecks = n;
     this.data.deck = [];
 
     for (i = 0; i < n; i++) {
@@ -67,61 +66,136 @@ M = {
 
 
   },
-  Player: function() {
+  Player: function(s) {
     this.score = 0;
     this.hand = [];
+    this.numAces = 0;
+    this.refclass = s;
+
+    this.refresh = function() {
+    	this.score = 0;
+    	this.hand = [];
+    	this.numAces = 0;
+    }
   },
   shuffle: function(v) {
     for (var j, x, i = v.length; i; j = parseInt(Math.random() * i), x = v[--i], v[i] = v[j], v[j] = x);
     return v;
   },
   deal: function() {
+  	this.clearTable();
+  	V.btnDeal.hide();
+  	V.btnHit.show();
+  	V.btnStand.show();
     for (j = 0; j < 3; j++) {
       //$('#view').append("<br>" + C.model.this.data.deck[j].toString());
-      topCard = this.data.deck.pop();
       if (j % 2 == 0) {
-        $('#cards .player').append('<li><div class="card rank-' + topCard.rankcss + ' ' + topCard.suit + '"><span class="rank">' + topCard.rank + '</span><span class="suit">&' + topCard.suit + ';</span></div></li>');
-        this.data.player.hand.push(topCard);
-        this.data.player.score += topCard.r;
-        console.log(this.data.player.score);
+        this.drawCard(this.data.player);        
       } else {
-        $('#cards .dealer').append('<li><div class="card rank-' + topCard.rankcss + ' ' + topCard.suit + '"><span class="rank">' + topCard.rank + '</span><span class="suit">&' + topCard.suit + ';</span></div></li>');
-        this.data.dealer.hand.push(topCard);
-        this.data.dealer.score += topCard.r;
-        console.log(this.data.dealer.score);
+        this.drawCard(this.data.dealer);        
       }
     }
-    $('#cards .dealer').append('<li><div class="card back"></div></li>');
-    topCard = this.data.deck.pop();
-    this.data.dealer.hand.push(topCard);
-    this.data.dealer.score += topCard.r;
-    console.log(this.data.dealer.score);
+    this.drawCardBack(this.data.dealer);
   },
-  hit: function() {},
-  stand: function() {},
+  hit: function(p) {  	  	
+  	this.drawCard(p);
+	if (p.score == 21) {this.stand();}
+  	else if (p.score > 21 && !this.hasAce(p)) {this.stand();}
+  },
+  stand: function() {
+  	V.btnHit.hide();
+  	V.btnStand.hide();
+  	this.showHand(this.data.dealer);
+  	this.dealerAI();
+  },
+  drawCard: function(p) {
+  	topCard = this.data.deck.pop();
+  	$('#cards .' + p.refclass).append('<li><div class="card rank-' + topCard.rankcss + ' ' + topCard.suit + '"><span class="rank">' + topCard.rank + '</span><span class="suit">&' + topCard.suit + ';</span></div></li>');
+  	p.hand.push(topCard);
+  	p.score += topCard.r;
+	
+	if (topCard.rank == "A") {p.numAces += 1;}
+  },
+  drawCardBack: function(p) {
+  	topCard = this.data.deck.pop();
+  	$('#cards .' + p.refclass).append('<li><div class="card back"></div></li>');
+  	p.hand.push(topCard);
+  	p.score += topCard.r;
+
+  	if (topCard.rank == "A") {p.numAces += 1;}
+  },
+  showHand: function(p) {
+  	$('#cards .' + p.refclass).empty();
+  	for (i = 0; i < p.hand.length; i++) {
+  		topCard = p.hand[i];
+  		$('#cards .' + p.refclass).append('<li><div class="card rank-' + topCard.rankcss + ' ' + topCard.suit + '"><span class="rank">' + topCard.rank + '</span><span class="suit">&' + topCard.suit + ';</span></div></li>');
+  	}
+  },
+  hasAce: function(p) {
+  	if (p.numAces > 0) {
+  		p.numAces--;
+  		p.score -= 10;
+  		return true;
+  	}
+  	return false;
+  },
+  dealerAI: function() {
+  	while (this.data.dealer.score < 17) {this.drawCard(this.data.dealer);}
+  	this.calcWinner();
+  },
+  calcWinner: function() {
+  	if (this.data.dealer.score > 21) {V.result.html(this.data.dealer.refclass + " busted. " + this.data.player.refclass + " wins!")}
+ 	else if (this.data.player.score > 21) {V.result.html(this.data.player.refclass + " busted. " + this.data.player.refclass + " loses...")}
+  	else if (this.data.dealer.score > this.data.player.score) {V.result.html(this.data.player.refclass + " loses...");}
+  	else if (this.data.dealer.score < this.data.player.score) {V.result.html(this.data.player.refclass + " wins!");}
+  	else {V.result.html("tie");}
+  	V.btnDeal.show();
+  },
+  clearTable: function() {
+  	$('#cards .dealer').empty();
+  	$('#cards .player').empty();
+  	V.result.empty();
+  	this.data.dealer.refresh();
+  	this.data.player.refresh();
+   	this.data.deck = [];
+
+  	for (j = 0; j < 52; j++) {
+	    this.data.deck[j] = new M.Card(j);
+	    this.data.deck[j].standardize();
+	}
+
+	this.shuffle(this.data.deck);
+  }
 }
 
 V = {
   btnDeal: $('#deal'),
   btnHit: $('#hit'),
-  btnStand: $('#stand')
+  btnStand: $('#stand'),
+  result: $('#result')
 }
 
 C = {
   model: M,
   view: V,
   run: function() {
-    this.model.Deck(1);
+  	this.view.btnHit.hide();
+  	this.view.btnStand.hide();
+    this.model.Deck(1); 
     this.model.shuffle(this.model.data.deck);
-    this.model.data.dealer = new this.model.Player();
-    this.model.data.player = new this.model.Player();
+    this.model.data.dealer = new this.model.Player("dealer");
+    this.model.data.player = new this.model.Player("player");
   }
 
 }
 
 C.run();
 C.view.btnDeal.click(function() {
-  C.view.btnDeal.hide();
   C.model.deal();
-  console.log(C.model.data.dealer);
+})
+C.view.btnHit.click(function() {
+  C.model.hit(C.model.data.player);  
+})
+C.view.btnStand.click(function() {
+  C.model.stand();  
 })

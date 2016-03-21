@@ -1,6 +1,6 @@
 #blackjack {
-  width: 600px;
-  height: 400px;
+  width: 720px;
+  height: 480px;
   padding: 10px 10px 10px 10px;
   display: block;
   position: relative;
@@ -11,15 +11,28 @@
   background-repeat: no-repeat;
 }
 
+#result {
+  position: absolute;
+  font-family: Impact, Charcoal, sans-serif;
+  font-size: 40px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: 1;
+  white-space: nowrap;
+}
+
 .dealer {
-  width: 300px;
-  height: 120px;
+  width: 720px;
+  height: 200px;
 }
 
 .player {
-  width: 300px;
-  height: 120px;
+  width: 720px;
+  height: 110px;
 }
+
 
 button {
   float: left;
